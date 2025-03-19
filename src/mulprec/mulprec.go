@@ -5,7 +5,7 @@ import (
 )
 
 const BASE int64 = 1000000000
-const KETA int = 2333
+const KETA int = 135
 const SHIFT int64 = 125
 
 type NUMBER struct {
@@ -195,4 +195,123 @@ func Decrement(s *NUMBER, target *NUMBER) {
 	var one NUMBER
 	SetInt(&one, 1)
 	Sub(s, &one, target)
+}
+
+func Multiple(s1 *NUMBER, s2 *NUMBER, target *NUMBER) {
+	simple_multiple(s1, s2, target)
+}
+
+func simple_multiple(s1 *NUMBER, s2 *NUMBER, target *NUMBER) {
+	Clear(target)
+	s1_keta := GetKeta(s1)
+	s2_keta := GetKeta(s2)
+
+	for i := range s2_keta + 1 {
+		if s2.N[i] == 0 {
+			continue
+		}
+
+		for j := range s1_keta + 1 {
+			if j+i >= s1_keta+s2_keta {
+				break
+			}
+
+			if s1.N[j] == 0 {
+				continue
+			}
+
+			target.N[j+i] += s1.N[j] * s2.N[i]
+
+			if target.N[j+i] >= BASE {
+				target.N[j+i+1] += target.N[j+i] / BASE
+				target.N[j+i] %= BASE
+			}
+		}
+	}
+}
+
+func Divide(s1 *NUMBER, s2 *NUMBER, target *NUMBER) {
+	if IsZero(s2) {
+		panic("Divide by zero")
+	}
+
+	if GetKeta(s2) > 1 {
+		divde_w_inverse(s1, s2, target)
+	} else {
+		one_divide(s1, s2, target)
+	}
+}
+
+func one_divide(s1 *NUMBER, s2 *NUMBER, target *NUMBER) {
+	Clear(target)
+	var t int64 = 0
+	var h int64 = 0
+
+	for i := GetKeta(s1) - 1; i >= 0; i-- {
+		t = h*BASE + s1.N[i]
+		h = t % s2.N[0]
+		target.N[i] = (t - h) / s2.N[0]
+	}
+}
+
+func Inverse(s *NUMBER, target *NUMBER, n int) {
+	Clear(target)
+	var x, y, h, one NUMBER
+	var t1, t2 NUMBER
+	keta := GetKeta(s)
+
+	Clear(&x)
+	Clear(&y)
+	Clear(&h)
+	Clear(&t1)
+	Clear(&t2)
+
+	SetInt(&one, 1)
+	ShiftLeft(&one, &t1, n)
+	Copy(&t1, &one)
+
+	SetInt(&t1, 2)
+	ShiftLeft(&t1, &x, n-keta)
+
+	for {
+		Copy(&x, &y)
+		Multiple(s, &y, &t1)
+		Sub(&one, &t1, &h)
+		Multiple(&h, &h, &t1)
+		ShiftRight(&t1, &t2, n)
+		Add(&t2, &h, &t1)
+		Add(&t1, &one, &t2)
+		Multiple(&y, &t2, &t1)
+		ShiftRight(&t1, &x, n)
+
+		if (n-GetKeta(&h))*3 >= n {
+			break
+		}
+	}
+
+	Copy(&x, target)
+}
+
+func divde_w_inverse(s1 *NUMBER, s2 *NUMBER, target *NUMBER) {
+	var i_s2, t1, t2 NUMBER
+
+	Clear(target)
+	Clear(&i_s2)
+	Clear(&t1)
+	Clear(&t2)
+
+	n := GetKeta(s1) + 1
+	Inverse(s2, &i_s2, n)
+	Multiple(s1, &i_s2, &t1)
+	ShiftRight(&t1, &t2, n)
+
+	Increment(&t2, &t1)
+	Multiple(s2, &t1, &t2)
+	tmp_comp := Compare(&t2, s1)
+	if tmp_comp == 1 {
+		Decrement(&t1, target)
+	} else {
+		Copy(&t1, target)
+	}
+
 }

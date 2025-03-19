@@ -14,6 +14,9 @@ func BasicCheck() {
 	Decrement()
 	ShiftLeft()
 	ShiftRight()
+	Multiple()
+	Divide()
+	Inverse()
 }
 
 func Add() {
@@ -144,5 +147,76 @@ func ShiftRight() {
 
 	fmt.Printf("b: ")
 	mulprec.Display(&a)
+	fmt.Println("")
+}
+
+func Multiple() {
+	fmt.Println("Multiple")
+
+	var a mulprec.NUMBER
+	var b mulprec.NUMBER
+	var c mulprec.NUMBER
+
+	mulprec.SetInt(&a, 123456789123456789)
+	mulprec.SetInt(&b, 123456789123456789)
+	mulprec.Clear(&c)
+
+	fmt.Printf("a: ")
+	mulprec.Display(&a)
+	fmt.Println("")
+	fmt.Printf("b: ")
+	mulprec.Display(&b)
+	fmt.Println("")
+
+	mulprec.Multiple(&a, &b, &c)
+
+	fmt.Printf("c: ")
+	mulprec.Display(&c)
+	fmt.Println("")
+
+}
+
+func Divide() {
+	fmt.Println("Divide")
+
+	var a mulprec.NUMBER
+	var b mulprec.NUMBER
+	var c mulprec.NUMBER
+
+	mulprec.SetInt(&a, 121932631112635269)
+	mulprec.SetInt(&b, 123456789)
+	mulprec.Clear(&c)
+
+	fmt.Printf("a: ")
+	mulprec.Display(&a)
+	fmt.Println("")
+	fmt.Printf("b: ")
+	mulprec.Display(&b)
+	fmt.Println("")
+
+	mulprec.Divide(&a, &b, &c)
+
+	fmt.Printf("c: ")
+	mulprec.Display(&c)
+	fmt.Println("")
+}
+
+func Inverse() {
+	fmt.Println("Inverse")
+
+	var a mulprec.NUMBER
+	var b mulprec.NUMBER
+
+	mulprec.SetInt(&a, 123456789)
+	mulprec.Clear(&b)
+
+	fmt.Printf("a: ")
+	mulprec.Display(&a)
+	fmt.Println("")
+
+	mulprec.Inverse(&a, &b, 100)
+
+	fmt.Printf("b: ")
+	mulprec.Display(&b)
 	fmt.Println("")
 }
